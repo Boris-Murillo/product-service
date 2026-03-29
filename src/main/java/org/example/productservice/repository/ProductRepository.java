@@ -1,0 +1,18 @@
+package org.example.productservice.repository;
+
+import org.example.productservice.model.Product;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.UUID;
+
+@Repository
+public interface ProductRepository extends JpaRepository<Product, UUID> {
+
+    List<Product> findByActiveTrue();
+
+    List<Product> findByCategoryAndActiveTrue(Product.Category category);
+
+    List<Product> findByNameContainingIgnoreCaseAndActiveTrue(String name);
+}
