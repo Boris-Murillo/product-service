@@ -3,6 +3,7 @@ package org.example.productservice.service;
 import lombok.RequiredArgsConstructor;
 import org.example.productservice.dto.ProductRequest;
 import org.example.productservice.dto.ProductResponse;
+import org.example.productservice.event.ProductEventPublisher;
 import org.example.productservice.model.Product;
 import org.example.productservice.repository.ProductRepository;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.util.UUID;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final ProductEventPublisher eventPublisher;
 
     public List<ProductResponse> findAll() {
         return productRepository.findByActiveTrue()
@@ -57,7 +59,9 @@ public class ProductService {
                 .imageUrl(request.getImageUrl())
                 .build();
 
-        return ProductResponse.from(productRepository.save(product));
+        ProductResponse response = ProductResponse.from(productRepository.save(product));
+        eventPublisher.publishCreated(response);
+        return response;
     }
 
     @Transactional
@@ -74,14 +78,17 @@ public class ProductService {
         product.setBrand(request.getBrand());
         product.setImageUrl(request.getImageUrl());
 
-        return ProductResponse.from(productRepository.save(product));
+        ProductResponse response = ProductResponse.from(productRepository.save(product));
+        eventPublisher.publishUpdated(response);
+        return response;
     }
 
     @Transactional
     public void delete(UUID id) {
         Product product = getActiveProduct(id);
         product.setActive(false);
-        productRepository.save(product);
+        ProductResponse response = ProductResponse.from(productRepository.save(product));
+        eventPublisher.publishDeleted(response);
     }
 
     private Product getActiveProduct(UUID id) {

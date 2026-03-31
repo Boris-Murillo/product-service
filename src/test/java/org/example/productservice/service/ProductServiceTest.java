@@ -2,6 +2,7 @@ package org.example.productservice.service;
 
 import org.example.productservice.dto.ProductRequest;
 import org.example.productservice.dto.ProductResponse;
+import org.example.productservice.event.ProductEventPublisher;
 import org.example.productservice.model.Product;
 import org.example.productservice.repository.ProductRepository;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,9 @@ class ProductServiceTest {
 
     @Mock
     private ProductRepository productRepository;
+
+    @Mock
+    private ProductEventPublisher eventPublisher;
 
     @InjectMocks
     private ProductService productService;
